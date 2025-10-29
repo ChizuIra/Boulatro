@@ -33,7 +33,7 @@ class BOULE:
         return self._score
 
     def move(self):
-        self._alt_vitesse = 0
+        self._alt_vitesse = randint(0,9) + self._score
         self.check_colision()
         self._pos_x += self._vitesse_x * self._alt_vitesse
         self._pos_y += self._vitesse_y
@@ -52,11 +52,11 @@ while not pr.window_should_close():
     pr.draw_text(f"{Boule_3.get_score()}",1,60,20,pr.RED)
 
     Boule_1.draw()
-    Boule_2.draw()
+ 
     Boule_3.draw()
 
     Boule_1.move()
-    Boule_2.move()
+
     Boule_3.move()
 
     pr.end_drawing()
