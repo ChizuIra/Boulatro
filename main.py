@@ -1,7 +1,7 @@
 import pyray as pr
 from random import randint
 
-pr.init_window(1200, 200, "Hello")
+pr.init_window(1200, 200, "Boulatro")
 pr.set_target_fps(60)
 x = 0
 class BOULE:
@@ -52,11 +52,9 @@ while not pr.window_should_close():
     pr.draw_text(f"{Boule_3.get_score()}",1,60,20,pr.RED)
 
     Boule_1.draw()
- 
     Boule_3.draw()
 
     Boule_1.move()
-
     Boule_3.move()
 
     pr.end_drawing()
