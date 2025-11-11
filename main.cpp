@@ -80,24 +80,38 @@ class Screen {
 	virtual bool should_change() = 0;
 	virtual void reset_screen() = 0;
 };
+class Bank {
+	private :
+		int _argent = 0;
+	public :
+	void drawArgent(){
+		std::stringstream st("");
+	    st << _argent;
+		DrawText("Argent :", 200, 0, 20, YELLOW);
+		DrawText(st.str().c_str(), 300, 0, 20, YELLOW);
+	}
+};
 
 class GameScreen : public Screen {
     private:
 	Boule _boule_joueur;
 	Boule _boule_adversaire;
+	Bank _PlayerBank;
 
     public:
 	GameScreen(): _boule_joueur(0, 150, GREEN), _boule_adversaire(0, 180, RED)
 	{}
 
 	void draw() override {
-            _boule_joueur.update();
-            _boule_adversaire.update();
+        _boule_joueur.update();
+        _boule_adversaire.update();
 	    DrawText("Tour : ", 1, 0, 20, WHITE);
 	    _boule_joueur.drawScore(1, 20);
 	    _boule_adversaire.drawScore(1, 40);
-            _boule_joueur.draw();
-            _boule_adversaire.draw();
+        _boule_joueur.draw();
+        _boule_adversaire.draw();
+
+		_PlayerBank.drawArgent();
 	}
 
 	bool should_change() override {
@@ -127,6 +141,9 @@ class ShopScreen : public Screen {
 	    _remaining_ticks = 60*10;
 	}
 };
+
+
+
 
 int main(void) {
     srand(time(NULL));
