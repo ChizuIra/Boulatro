@@ -74,15 +74,9 @@ class Boule {
         }
 };
 
-class Screen {
-    public:
-	virtual void draw() = 0;
-	virtual bool should_change() = 0;
-	virtual void reset_screen() = 0;
-};
 class Bank {
 	private :
-		int _argent = 0;
+		int _argent = 10;
 	public :
 	void drawArgent(){
 		std::stringstream st("");
@@ -90,37 +84,84 @@ class Bank {
 		DrawText("Argent :", 200, 0, 20, YELLOW);
 		DrawText(st.str().c_str(), 300, 0, 20, YELLOW);
 	}
+	/*
+	Calcule l'argent gagner suite au score du round
+	+1 $ par tour bonus
+
+	@param Boule Boule du joueur
+	@param int le nombre de tour minimum pour gagner le round
+	*/
+	void gameIncome(Boule boule_joueur, int minLap){
+		_argent += boule_joueur.get_score() - minLap;
+	}
+	/*
+	Calcule l'argent gagner grace l'intérêt (en fin de round)
+
+	@param int L'intérêt max autorisé par le jeu
+	*/
+	void interest(int maxInterest){
+		int interest = _argent/10;
+		if(interest > maxInterest){
+			_argent += maxInterest;
+		}else{
+			_argent += interest;
+		}
+	};
+};
+
+Bank PlayerBank;
+Boule boule_joueur(0, 150, GREEN);
+Boule boule_adversaire(0, 180, RED);
+
+class Screen {
+    public:
+	virtual void draw() = 0;
+	virtual bool should_change() = 0;
+	virtual void reset_screen() = 0;
+	virtual void kill_screen() = 0;
 };
 
 class GameScreen : public Screen {
     private:
-	Boule _boule_joueur;
-	Boule _boule_adversaire;
-	Bank _PlayerBank;
 
     public:
-	GameScreen(): _boule_joueur(0, 150, GREEN), _boule_adversaire(0, 180, RED)
+	GameScreen()
 	{}
 
 	void draw() override {
-        _boule_joueur.update();
-        _boule_adversaire.update();
+        boule_joueur.update();
+        boule_adversaire.update();
 	    DrawText("Tour : ", 1, 0, 20, WHITE);
-	    _boule_joueur.drawScore(1, 20);
-	    _boule_adversaire.drawScore(1, 40);
-        _boule_joueur.draw();
-        _boule_adversaire.draw();
+	    boule_joueur.drawScore(1, 20);
+	    boule_adversaire.drawScore(1, 40);
+        boule_joueur.draw();
+        boule_adversaire.draw();
 
-		_PlayerBank.drawArgent();
+		PlayerBank.drawArgent();
 	}
 
 	bool should_change() override {
-	    return _boule_joueur.get_score() >= 10;
-	}
+	    return boule_adversaire.get_score() >= 10;
+	}	
 
 	void reset_screen() override {
-	    _boule_joueur = Boule(0, 150, GREEN);
-	    _boule_adversaire = Boule(0, 180, RED);
+	    boule_joueur = Boule(0, 150, GREEN);
+	    boule_adversaire = Boule(0, 180, RED);
+	}
+
+	void kill_screen() override {
+		if(isWin()){
+			// calcule Argent
+			PlayerBank.gameIncome(boule_joueur,10);
+			PlayerBank.interest(5);
+		}
+	}
+	bool isWin(){
+		if(boule_joueur.get_score() >= boule_adversaire.get_score()){
+			return true;
+		}else{
+			return false;
+		}
 	}
 };
 
@@ -131,19 +172,19 @@ class ShopScreen : public Screen {
         ShopScreen() : _remaining_ticks(60*10) {}
 	void draw() override {
 	    DrawText("OMG LE SHOP", 600, 100, 10, GREEN);
-	    --_remaining_ticks;
+	    --_remaining_ticks;	
 	}
 	bool should_change() override {
 	    return (_remaining_ticks < 0);
 	}
-	
 	void reset_screen() override {
 	    _remaining_ticks = 60*10;
 	}
+	
+	void kill_screen() override {
+		return;
+	}
 };
-
-
-
 
 int main(void) {
     srand(time(NULL));
@@ -161,6 +202,7 @@ int main(void) {
         BeginDrawing();
         ClearBackground(BLACK);
 	if(screens[current_screen]->should_change()) {
+		screens[current_screen]->kill_screen();
 	    current_screen = (current_screen+1)%2;
 	    screens[current_screen]->reset_screen();
 	}

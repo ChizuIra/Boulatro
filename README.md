@@ -8,6 +8,23 @@ A chaque fin de Course le joueur fait face a une boutique, dans laquelle il peut
 Interet a la balatro + 
 
 
+Début de course : QTE de lancer de bille ( en mode flippeur )
+Le joueur a le droit à un nombre de replay, pour soit re essayer de gagner, soit essayer de faire un meilleur score.
+Le dernier résultat est conservé
+
+
+Boucle de Gameplay : 
+-> Lancement de la boule (Flippeur)
+-> le joueur observe les boules faire la course
+-> Defaite -> relance
+-> victoire-> Choisi entre accepter sa victoire ou relancer pour essayer de faire mieux
+
+-> Defaite -> plus de relance -> fin de partie
+-> Victoire accepter ou plus de relance -> Calcule du gain d'argent puis interet
+
+-> Shop : Le joueur dépense sont argent pour améliorer sa boule via des joker et autres bonus
+-> Round Suivant. ( retourner en haut )
+
 # Road Map
 
 1. Premiere boucle de gameplay ( 1 course de 10 tour )
