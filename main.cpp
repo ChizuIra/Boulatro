@@ -109,6 +109,10 @@ class Bank {
 	};
 };
 
+class Pin {
+
+
+};
 Bank playerBank;
 Boule boule_joueur(0, 150, GREEN);
 Boule boule_adversaire(0, 180, RED);
@@ -129,20 +133,43 @@ class Screen {
 
 class GameScreen : public Screen {
     private:
+	bool _isStarted;
+	Pin PlayerPin;
 
     public:
-	GameScreen() {}
-
+	GameScreen() : _isStarted(false) {}
+//note: IsKeyPressed(KEY_SPACE)
 	void draw() override {
-        boule_joueur.update();
+		if(_isStarted){
+			drawStartedGame();
+		}else{
+		if(IsKeyPressed(KEY_SPACE)){
+			//recupere la pos du pin
+			//determine le bonus selon la position
+			_isStarted = true;
+		}
+		drawPin();
+		}
+	}
+	void drawStartedGame() {
+		boule_joueur.update();
         boule_adversaire.update();
 	    DrawText("Tour : ", 1, 0, 20, WHITE);
 	    boule_joueur.drawScore(1, 20);
 	    boule_adversaire.drawScore(1, 40);
         boule_joueur.draw();
         boule_adversaire.draw();
-
 		playerBank.drawArgent();
+	}
+
+	void drawPin(){
+		char temp_txt[] = "Appuie sur Espace";
+		DrawText(temp_txt,(1200-MeasureText(temp_txt,20))/2, 150, 20, WHITE);
+		DrawRectangle(200,50,800,100,Color{ 89, 18, 13 , 255});
+		DrawRectangle(450,50,300,100,Color{161, 0, 0,255});
+		DrawRectangle(550,50,100,100,Color{161, 102, 0,255});
+		DrawRectangle(590,50,20,100,Color{97, 161, 0,255});
+		DrawRectangleLines(200,50,800,100,WHITE);
 	}
 
 	bool should_change() override {
@@ -153,7 +180,7 @@ class GameScreen : public Screen {
 	    boule_joueur = Boule(0, 150, GREEN);
 	    boule_adversaire = Boule(0, 180, RED);
 	}
-	size_t switch_to(){
+	size_t switch_to() override {
 		if(isWin()){
 			return SHOP_SCREEN;
 		}
@@ -164,6 +191,7 @@ class GameScreen : public Screen {
 			// calcule Argent
 			playerBank.gameIncome(boule_joueur,10);
 			playerBank.interest(5);
+			_isStarted = false;
 		}
 	}
 	bool isWin(){
@@ -191,7 +219,7 @@ class ShopScreen : public Screen {
 	void reset_screen() override {
 	    _remaining_ticks = 60*10;
 	}
-	size_t switch_to(){
+	size_t switch_to() override {
 		return GAME_SCREEN;
 	}	
 	void kill_screen() override {
@@ -214,7 +242,7 @@ class LooseScreen : public Screen {
 	void reset_screen() override {
 	    _remaining_ticks = 60*10;
 	}
-	size_t switch_to(){
+	size_t switch_to() override {
 		return GAME_SCREEN;
 	}	
 	void kill_screen() override {
@@ -240,9 +268,7 @@ int main(void) {
         ClearBackground(BLACK);
 	if(screens[current_screen]->should_change()) {
 		screens[current_screen]->kill_screen();
-
 	    current_screen =  screens[current_screen]->switch_to();
-
 	    screens[current_screen]->reset_screen();
 	}
         screens[current_screen]->draw();
