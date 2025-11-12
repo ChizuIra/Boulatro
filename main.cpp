@@ -109,24 +109,29 @@ class Bank {
 	};
 };
 
-Bank PlayerBank;
+Bank playerBank;
 Boule boule_joueur(0, 150, GREEN);
 Boule boule_adversaire(0, 180, RED);
 
+//Index des Screens
+const size_t GAME_SCREEN 	= 0;
+const size_t SHOP_SCREEN 	= 1;
+const size_t LOOSE_SCREEN	= 2;
+
 class Screen {
     public:
-	virtual void draw() = 0;
-	virtual bool should_change() = 0;
-	virtual void reset_screen() = 0;
-	virtual void kill_screen() = 0;
+	virtual void 	draw() = 0;
+	virtual bool 	should_change() = 0;
+	virtual void 	reset_screen() = 0;
+	virtual void 	kill_screen() = 0;
+	virtual	size_t	switch_to() = 0 ;
 };
 
 class GameScreen : public Screen {
     private:
 
     public:
-	GameScreen()
-	{}
+	GameScreen() {}
 
 	void draw() override {
         boule_joueur.update();
@@ -137,7 +142,7 @@ class GameScreen : public Screen {
         boule_joueur.draw();
         boule_adversaire.draw();
 
-		PlayerBank.drawArgent();
+		playerBank.drawArgent();
 	}
 
 	bool should_change() override {
@@ -148,12 +153,17 @@ class GameScreen : public Screen {
 	    boule_joueur = Boule(0, 150, GREEN);
 	    boule_adversaire = Boule(0, 180, RED);
 	}
-
+	size_t switch_to(){
+		if(isWin()){
+			return SHOP_SCREEN;
+		}
+		return LOOSE_SCREEN;
+	}
 	void kill_screen() override {
 		if(isWin()){
 			// calcule Argent
-			PlayerBank.gameIncome(boule_joueur,10);
-			PlayerBank.interest(5);
+			playerBank.gameIncome(boule_joueur,10);
+			playerBank.interest(5);
 		}
 	}
 	bool isWin(){
@@ -163,6 +173,7 @@ class GameScreen : public Screen {
 			return false;
 		}
 	}
+
 };
 
 class ShopScreen : public Screen {
@@ -180,7 +191,32 @@ class ShopScreen : public Screen {
 	void reset_screen() override {
 	    _remaining_ticks = 60*10;
 	}
-	
+	size_t switch_to(){
+		return GAME_SCREEN;
+	}	
+	void kill_screen() override {
+		return;
+	}
+};
+
+class LooseScreen : public Screen {
+    private:
+	int _remaining_ticks;
+    public:
+        LooseScreen() : _remaining_ticks(60*10) {}
+	void draw() override {
+	    DrawText("Gros Looser ta perdu", 600, 100, 10, RED);
+	    --_remaining_ticks;	
+	}
+	bool should_change() override {
+	    return (_remaining_ticks < 0);
+	}
+	void reset_screen() override {
+	    _remaining_ticks = 60*10;
+	}
+	size_t switch_to(){
+		return GAME_SCREEN;
+	}	
 	void kill_screen() override {
 		return;
 	}
@@ -193,6 +229,7 @@ int main(void) {
     std::vector<std::unique_ptr<Screen>> screens;
     screens.push_back(std::make_unique<GameScreen>());
     screens.push_back(std::make_unique<ShopScreen>());
+	screens.push_back(std::make_unique<LooseScreen>());
 
     SetTargetFPS(60);
 
@@ -203,7 +240,9 @@ int main(void) {
         ClearBackground(BLACK);
 	if(screens[current_screen]->should_change()) {
 		screens[current_screen]->kill_screen();
-	    current_screen = (current_screen+1)%2;
+
+	    current_screen =  screens[current_screen]->switch_to();
+
 	    screens[current_screen]->reset_screen();
 	}
         screens[current_screen]->draw();

@@ -14,19 +14,23 @@ Le dernier résultat est conservé
 
 
 Boucle de Gameplay : 
--> Lancement de la boule (Flippeur)
+-> Lancement de la boule (Avec QTE Flippeur)
 -> le joueur observe les boules faire la course
 -> Defaite -> relance
--> victoire-> Choisi entre accepter sa victoire ou relancer pour essayer de faire mieux
+-> victoire-> Choisis entre accepter sa victoire ou relancer pour essayer de faire mieux
 
 -> Defaite -> plus de relance -> fin de partie
--> Victoire accepter ou plus de relance -> Calcule du gain d'argent puis interet
+-> Victoire acceptée ou plus de relance -> Calcul du gain d'argent puis intérêt
 
--> Shop : Le joueur dépense sont argent pour améliorer sa boule via des joker et autres bonus
+-> Shop : Le joueur dépense son argent pour améliorer sa boule via des jokers et autres bonus
 -> Round Suivant. ( retourner en haut )
 
-# Road Map
 
-1. Premiere boucle de gameplay ( 1 course de 10 tour )
-2. HUD
-3. 
+
+-----------
+
+Note : 
+Flippeur : 
+-> Crée une Pop up 
+-> Press " space " pour lancer la boule 
+-> Press " space " pour flip
