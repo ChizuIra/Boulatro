@@ -1,2 +1,6 @@
 lib/libraylib.a
 main
+haskell/dist-newstyle
+haskell/cabal.project.local
+haskell/CHANGELOG.md
+haskell/LICENSE
