@@ -110,12 +110,56 @@ class Bank {
 };
 
 class Pin {
+	private:
+	Vector2 _pos;
+	Vector2 _vit;
+	Color   _color;
 
+	Vector2 get_next_pos() const {
+	    return CLITERAL(Vector2){.x=_pos.x+_vit.x, .y=_pos.y+_vit.y};
+	}
+
+	void check_collision(char* hit_x, char* hit_y) const {
+	Vector2 fut = get_next_pos();
+    if(fut.x >= 1000) {
+        *hit_x = 1;
+    }
+	if(fut.x < 200) {
+	*hit_x = -1;
+	}
+	}
+	public:
+	        
+	Pin(int pos_x, int pos_y, Color color)
+        : _pos({(float)pos_x, (float)pos_y}), _color(color), _vit({7,0}) {}
+
+    void draw() const {
+        DrawRectangle(_pos.x, _pos.y, 5, 50, _color);
+    }
+    void update() {
+	    char x = 0, y = 0;
+        check_collision(&x, &y);
+	    if (x) _vit.x *= -1;
+	    if (y) _vit.y *= -1;
+	    _pos = get_next_pos();
+    }
+
+	void stopPin(){
+		_vit = {0,0};
+	}
+	void startPin(){
+		_vit = {7,0};
+	}
+
+	int get_PosPin(){
+		return _pos.x;
+	}
 
 };
 Bank playerBank;
 Boule boule_joueur(0, 150, GREEN);
 Boule boule_adversaire(0, 180, RED);
+Pin PlayerPin(200,75,WHITE);
 
 //Index des Screens
 const size_t GAME_SCREEN 	= 0;
@@ -134,20 +178,21 @@ class Screen {
 class GameScreen : public Screen {
     private:
 	bool _isStarted;
-	Pin PlayerPin;
 
     public:
 	GameScreen() : _isStarted(false) {}
-//note: IsKeyPressed(KEY_SPACE)
 	void draw() override {
 		if(_isStarted){
 			drawStartedGame();
 		}else{
 		if(IsKeyPressed(KEY_SPACE)){
-			//recupere la pos du pin
-			//determine le bonus selon la position
+			PlayerPin.stopPin();
+			PlayerPin.get_PosPin();
+			WaitTime(1);
 			_isStarted = true;
 		}
+		
+		PlayerPin.update();
 		drawPin();
 		}
 	}
@@ -170,6 +215,8 @@ class GameScreen : public Screen {
 		DrawRectangle(550,50,100,100,Color{161, 102, 0,255});
 		DrawRectangle(590,50,20,100,Color{97, 161, 0,255});
 		DrawRectangleLines(200,50,800,100,WHITE);
+		PlayerPin.draw();
+
 	}
 
 	bool should_change() override {
@@ -191,8 +238,9 @@ class GameScreen : public Screen {
 			// calcule Argent
 			playerBank.gameIncome(boule_joueur,10);
 			playerBank.interest(5);
-			_isStarted = false;
 		}
+		_isStarted = false;
+		PlayerPin.startPin();
 	}
 	bool isWin(){
 		if(boule_joueur.get_score() >= boule_adversaire.get_score()){
