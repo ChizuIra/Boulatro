@@ -5,6 +5,8 @@
 #include <ctime>
 #include <vector>
 #include <memory>
+#include <math.h>
+#include <stdio.h>
 
 constexpr unsigned int MODIF_MAX = 9;
 
@@ -72,6 +74,10 @@ class Boule {
 	    if (y) _vit.y *= -1;
 	    _pos = get_next_pos();
         }
+
+	void setPosition(int pos_x){
+		_pos.x = pos_x;
+	}
 };
 
 class Bank {
@@ -151,15 +157,11 @@ class Pin {
 		_vit = {7,0};
 	}
 
-	int get_PosPin(){
-		return _pos.x;
+	float get_PosPin(){
+		return _pos.x-200;
 	}
 
 };
-Bank playerBank;
-Boule boule_joueur(0, 150, GREEN);
-Boule boule_adversaire(0, 180, RED);
-Pin PlayerPin(200,75,WHITE);
 
 //Index des Screens
 const size_t GAME_SCREEN 	= 0;
@@ -177,34 +179,43 @@ class Screen {
 
 class GameScreen : public Screen {
     private:
+
+	Boule _boule_adversaire;
+	Boule _boule_joueur;
+	Pin _PlayerPin;
+	Bank _playerBank;
 	bool _isStarted;
 
     public:
-	GameScreen() : _isStarted(false) {}
+	GameScreen() 
+	: _isStarted(false), _boule_adversaire(0, 180, RED) , _boule_joueur(0, 150, GREEN) , _PlayerPin(200,75,WHITE){}
 	void draw() override {
 		if(_isStarted){
 			drawStartedGame();
 		}else{
 		if(IsKeyPressed(KEY_SPACE)){
-			PlayerPin.stopPin();
-			PlayerPin.get_PosPin();
-			WaitTime(1);
+			_PlayerPin.stopPin();
+			float position = 1-fabsf((_PlayerPin.get_PosPin()/400.0)-1);
+			_boule_joueur.setPosition(600*position);
+			std::cout << "get_pos_x :" << _PlayerPin.get_PosPin() << std::endl;
+			std::cout << "calcule :" << position << std::endl;
+			std::cout << "bonus:" << 600*position << std::endl;
 			_isStarted = true;
 		}
 		
-		PlayerPin.update();
+		_PlayerPin.update();
 		drawPin();
 		}
 	}
 	void drawStartedGame() {
-		boule_joueur.update();
-        boule_adversaire.update();
+		_boule_joueur.update();
+        _boule_adversaire.update();
 	    DrawText("Tour : ", 1, 0, 20, WHITE);
-	    boule_joueur.drawScore(1, 20);
-	    boule_adversaire.drawScore(1, 40);
-        boule_joueur.draw();
-        boule_adversaire.draw();
-		playerBank.drawArgent();
+	    _boule_joueur.drawScore(1, 20);
+	    _boule_adversaire.drawScore(1, 40);
+        _boule_joueur.draw();
+        _boule_adversaire.draw();
+		_playerBank.drawArgent();
 	}
 
 	void drawPin(){
@@ -215,17 +226,17 @@ class GameScreen : public Screen {
 		DrawRectangle(550,50,100,100,Color{161, 102, 0,255});
 		DrawRectangle(590,50,20,100,Color{97, 161, 0,255});
 		DrawRectangleLines(200,50,800,100,WHITE);
-		PlayerPin.draw();
+		_PlayerPin.draw();
 
 	}
 
 	bool should_change() override {
-	    return boule_adversaire.get_score() >= 10;
+	    return _boule_adversaire.get_score() >= 10;
 	}	
 
 	void reset_screen() override {
-	    boule_joueur = Boule(0, 150, GREEN);
-	    boule_adversaire = Boule(0, 180, RED);
+	    _boule_joueur = Boule(0, 150, GREEN);
+	    _boule_adversaire = Boule(0, 180, RED);
 	}
 	size_t switch_to() override {
 		if(isWin()){
@@ -236,14 +247,14 @@ class GameScreen : public Screen {
 	void kill_screen() override {
 		if(isWin()){
 			// calcule Argent
-			playerBank.gameIncome(boule_joueur,10);
-			playerBank.interest(5);
+			_playerBank.gameIncome(_boule_joueur,10);
+			_playerBank.interest(5);
 		}
 		_isStarted = false;
-		PlayerPin.startPin();
+		_PlayerPin.startPin();
 	}
 	bool isWin(){
-		if(boule_joueur.get_score() >= boule_adversaire.get_score()){
+		if(_boule_joueur.get_score() >= _boule_adversaire.get_score()){
 			return true;
 		}else{
 			return false;
