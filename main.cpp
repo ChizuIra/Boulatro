@@ -9,6 +9,10 @@
 #include <stdio.h>
 
 constexpr unsigned int MODIF_MAX = 9;
+//Index des Screens
+const size_t GAME_SCREEN 	= 0;
+const size_t SHOP_SCREEN 	= 1;
+const size_t LOSE_SCREEN	= 2;
 
 class Boule {
     private:
@@ -40,7 +44,7 @@ class Boule {
 	}
 
 	void roll_alt() {
-	    _alt_vitesse = (rand()%MODIF_MAX)+1;
+	    _alt_vitesse = 10;
 	}
 
     public:
@@ -57,7 +61,7 @@ class Boule {
             return _score;
         }
 
-	void drawScore(unsigned int x, unsigned int y) const {
+	void draw_score(unsigned int x, unsigned int y) const {
 	    std::stringstream st("");
 	    st << _score;
 	    DrawText(st.str().c_str(), x, y , 20, _color);
@@ -75,7 +79,7 @@ class Boule {
 	    _pos = get_next_pos();
         }
 
-	void setPosition(int pos_x){
+	void set_position(int pos_x){
 		_pos.x = pos_x;
 	}
 };
@@ -84,7 +88,7 @@ class Bank {
 	private :
 		int _argent = 10;
 	public :
-	void drawArgent(){
+	void draw_argent(){
 		std::stringstream st("");
 	    st << _argent;
 		DrawText("Argent :", 200, 0, 20, YELLOW);
@@ -97,7 +101,7 @@ class Bank {
 	@param Boule Boule du joueur
 	@param int le nombre de tour minimum pour gagner le round
 	*/
-	void gameIncome(Boule boule_joueur, int minLap){
+	void game_income(Boule boule_joueur, int minLap){
 		_argent += boule_joueur.get_score() - minLap;
 	}
 	/*
@@ -150,10 +154,10 @@ class Pin {
 	    _pos = get_next_pos();
     }
 
-	void stopPin(){
+	void stop_pin(){
 		_vit = {0,0};
 	}
-	void startPin(){
+	void start_pin(){
 		_vit = {7,0};
 	}
 
@@ -162,11 +166,6 @@ class Pin {
 	}
 
 };
-
-//Index des Screens
-const size_t GAME_SCREEN 	= 0;
-const size_t SHOP_SCREEN 	= 1;
-const size_t LOOSE_SCREEN	= 2;
 
 class Screen {
     public:
@@ -191,34 +190,31 @@ class GameScreen : public Screen {
 	: _isStarted(false), _boule_adversaire(0, 180, RED) , _boule_joueur(0, 150, GREEN) , _PlayerPin(200,75,WHITE){}
 	void draw() override {
 		if(_isStarted){
-			drawStartedGame();
+			draw_started_game();
 		}else{
 		if(IsKeyPressed(KEY_SPACE)){
-			_PlayerPin.stopPin();
+			_PlayerPin.stop_pin();
 			float position = 1-fabsf((_PlayerPin.get_PosPin()/400.0)-1);
-			_boule_joueur.setPosition(600*position);
-			std::cout << "get_pos_x :" << _PlayerPin.get_PosPin() << std::endl;
-			std::cout << "calcule :" << position << std::endl;
-			std::cout << "bonus:" << 600*position << std::endl;
+			_boule_joueur.set_position(600*position);
 			_isStarted = true;
 		}
 		
 		_PlayerPin.update();
-		drawPin();
+		draw_pin();
 		}
 	}
-	void drawStartedGame() {
+	void draw_started_game() {
 		_boule_joueur.update();
         _boule_adversaire.update();
 	    DrawText("Tour : ", 1, 0, 20, WHITE);
-	    _boule_joueur.drawScore(1, 20);
-	    _boule_adversaire.drawScore(1, 40);
+	    _boule_joueur.draw_score(1, 20);
+	    _boule_adversaire.draw_score(1, 40);
         _boule_joueur.draw();
         _boule_adversaire.draw();
-		_playerBank.drawArgent();
+		_playerBank.draw_argent();
 	}
 
-	void drawPin(){
+	void draw_pin(){
 		char temp_txt[] = "Appuie sur Espace";
 		DrawText(temp_txt,(1200-MeasureText(temp_txt,20))/2, 150, 20, WHITE);
 		DrawRectangle(200,50,800,100,Color{ 89, 18, 13 , 255});
@@ -239,21 +235,21 @@ class GameScreen : public Screen {
 	    _boule_adversaire = Boule(0, 180, RED);
 	}
 	size_t switch_to() override {
-		if(isWin()){
+		if(is_win()){
 			return SHOP_SCREEN;
 		}
-		return LOOSE_SCREEN;
+		return LOSE_SCREEN;
 	}
 	void kill_screen() override {
-		if(isWin()){
+		if(is_win()){
 			// calcule Argent
-			_playerBank.gameIncome(_boule_joueur,10);
+			_playerBank.game_income(_boule_joueur,10);
 			_playerBank.interest(5);
 		}
 		_isStarted = false;
-		_PlayerPin.startPin();
+		_PlayerPin.start_pin();
 	}
-	bool isWin(){
+	bool is_win(){
 		if(_boule_joueur.get_score() >= _boule_adversaire.get_score()){
 			return true;
 		}else{
@@ -286,11 +282,11 @@ class ShopScreen : public Screen {
 	}
 };
 
-class LooseScreen : public Screen {
+class LoseScreen : public Screen {
     private:
 	int _remaining_ticks;
     public:
-        LooseScreen() : _remaining_ticks(60*10) {}
+        LoseScreen() : _remaining_ticks(60*10) {}
 	void draw() override {
 	    DrawText("Gros Looser ta perdu", 600, 100, 10, RED);
 	    --_remaining_ticks;	
@@ -316,7 +312,7 @@ int main(void) {
     std::vector<std::unique_ptr<Screen>> screens;
     screens.push_back(std::make_unique<GameScreen>());
     screens.push_back(std::make_unique<ShopScreen>());
-	screens.push_back(std::make_unique<LooseScreen>());
+	screens.push_back(std::make_unique<LoseScreen>());
 
     SetTargetFPS(60);
 

@@ -29,8 +29,26 @@ Boucle de Gameplay :
 
 -----------
 
-Note : 
-Flippeur : 
--> Crée une Pop up 
--> Press " space " pour lancer la boule 
--> Press " space " pour flip
+variable de la boule :
+
+Vitesse
+Accélération
+force de rebon
+Elan 
+Slot Joker 
+
+Nombre de Tour a faire
+
+QTE :
+vitesse du pin
+taille des zones
+Force du bonus
+
+V = ( base + Dice ) * mult
+
+> Dice : d4, d6, d8, d10, d12, d20 
+Chaque face de chaque dés est améliorable indépendamment
+
+Idée de Liam : 
+d100 , comme un dé légendaire
+
