@@ -1,5 +1,5 @@
 #pragma once
-#include "boule.hpp"
+#include "./boule.hpp"
 
 class Bank {
 	private :

@@ -2,10 +2,21 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++17 -Ihpp      # <-- ajout du dossier hpp/
 
-# Source files and executable name
-SRC_FILES = main.cpp game_screen.cpp boule.cpp bank.cpp pin.cpp shop_screen.cpp lose_screen.cpp
+# Dossiers
+SRC_DIR = cpp
+
+# Source files (déplacés dans cpp/)
+SRC_FILES = $(SRC_DIR)/main.cpp \
+            $(SRC_DIR)/game_screen.cpp \
+            $(SRC_DIR)/boule.cpp \
+            $(SRC_DIR)/bank.cpp \
+            $(SRC_DIR)/pin.cpp \
+            $(SRC_DIR)/shop_screen.cpp \
+            $(SRC_DIR)/lose_screen.cpp
+
+# Executable name
 EXECUTABLE = main
 
 # Libraries to link

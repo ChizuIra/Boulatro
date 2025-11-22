@@ -1,5 +1,5 @@
 #pragma once
-#include "./lib/raylib.h"
+#include "../lib/raylib.h"
 
 class Pin {
     private:

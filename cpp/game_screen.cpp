@@ -1,5 +1,5 @@
-#include "./game_screen.hpp"
-#include "./lib/raylib.h"
+#include "../hpp/game_screen.hpp"
+#include "../lib/raylib.h"
 #include <math.h>
 
 GameScreen::GameScreen() 

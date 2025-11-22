@@ -1,6 +1,6 @@
-#include "./pin.hpp"
-#include "./boule.hpp"
-#include "./lib/raylib.h"
+#include "../hpp/pin.hpp"
+#include "../hpp/boule.hpp"
+#include "../lib/raylib.h"
 
 Vector2 Pin::get_next_pos() const {
     return CLITERAL(Vector2){_pos.x+_vit.x, _pos.y+_vit.y};

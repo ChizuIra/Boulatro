@@ -1,4 +1,4 @@
-#include "./bank.hpp"
+#include "../hpp/bank.hpp"
 #include <sstream>
 
 void Bank::draw_argent(){

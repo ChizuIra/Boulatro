@@ -1,5 +1,5 @@
-#include "./shop_screen.hpp"
-#include "./lib/raylib.h"
+#include "../hpp/shop_screen.hpp"
+#include "../lib/raylib.h"
 
 ShopScreen::ShopScreen() : _remaining_ticks(60*10) {}
 
