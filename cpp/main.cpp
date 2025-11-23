@@ -1,9 +1,9 @@
 #include "../lib/raylib.h"
-#include "../hpp/def.hpp"
-#include "../hpp/game_screen.hpp"
-#include "../hpp/shop_screen.hpp"
-#include "../hpp/lose_screen.hpp"
-#include "../hpp/boule.hpp"
+#include "def.hpp"
+#include "game_screen.hpp"
+#include "shop_screen.hpp"
+#include "lose_screen.hpp"
+#include "boule.hpp"
 #include <iostream>
 #include <ctime>
 #include <vector>

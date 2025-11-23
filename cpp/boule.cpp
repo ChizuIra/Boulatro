@@ -1,4 +1,4 @@
-#include "../hpp/boule.hpp"
+#include "boule.hpp"
 #include <sstream>
 
 Vector2 Boule::get_next_pos() const {

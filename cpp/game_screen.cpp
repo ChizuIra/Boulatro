@@ -1,4 +1,4 @@
-#include "../hpp/game_screen.hpp"
+#include "game_screen.hpp"
 #include "../lib/raylib.h"
 #include <math.h>
 

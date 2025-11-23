@@ -1,5 +1,5 @@
-#include "../hpp/pin.hpp"
-#include "../hpp/boule.hpp"
+#include "pin.hpp"
+#include "boule.hpp"
 #include "../lib/raylib.h"
 
 Vector2 Pin::get_next_pos() const {

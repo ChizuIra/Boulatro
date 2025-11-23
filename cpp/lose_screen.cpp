@@ -1,4 +1,4 @@
-#include "../hpp/lose_screen.hpp"
+#include "lose_screen.hpp"
 #include "../lib/raylib.h"
 
 LoseScreen::LoseScreen() : _remaining_ticks(60*10) {}
